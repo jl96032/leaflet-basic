@@ -18,9 +18,15 @@ const MapComponent = (props) => {
   const markerRef = useRef(null);
 
   let navigate = useNavigate();
-  const [lng, setLng] = useState(12.549);
-  const [lat, setLat] = useState(55.666);
-  const [zoom, setZoom] = useState(15);
+  let { z1 , lat1, lng1 } = useParams() // props.match?.lng1
+  //let showCollisionBoxes = props.showCollisionBoxes;
+  z1 = z1 || 6;
+  lat1 = lat1 || 59.355596;
+  lng1 = lng1 || 17.973633;
+  
+  const [lng, setLng] = useState(lng1);
+  const [lat, setLat] = useState(lat1);
+  const [zoom, setZoom] = useState(z1);
 
   // Base tile for the map:
   tileRef.current = L.tileLayer(
@@ -52,8 +58,8 @@ var skippoTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms
 
   // Options for our map instance:
   const mapParams = {
-    center: [59.355596,17.973633], // USA
-    zoom: 6,
+    center: [lat1, lng1], 
+    zoom: z1,
     zoomControl: true,
     minZoom: 0,
     maxZoom: 17,
@@ -118,13 +124,8 @@ var skippoTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms
   };
 
   return (
-    <>
-      <button onClick={handleClick}>
-        {`Click to ${marker ? 'remove' : 'add'} marker`}
-      </button>
       <div id="map" style={mapStyles} />
-    </>
-  );
+      );
 };
 
 export default MapComponent;

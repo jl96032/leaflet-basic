@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useParams, useNavigate, useLocation, useSearchParams  } from 'react-router-dom'
+
 import L from 'leaflet';
 
 /**
@@ -15,6 +17,11 @@ const MapComponent = (props) => {
   const tileRef = useRef(null);
   const markerRef = useRef(null);
 
+  let navigate = useNavigate();
+  const [lng, setLng] = useState(12.549);
+  const [lat, setLat] = useState(55.666);
+  const [zoom, setZoom] = useState(15);
+
   // Base tile for the map:
   tileRef.current = L.tileLayer(
     `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
@@ -24,14 +31,12 @@ const MapComponent = (props) => {
     }
   );
 
-  var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap'
+  var skippoProd = L.tileLayer('https://map.eniro.com/geowebcache/service/tms1.0.0/hydrographica2x/{z}/{x}/{-y}.png', {
+    maxZoom: 17
 });
 
-var osm1 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap'
+var skippoTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms1.0.0/hydrographica2x/{z}/{x}/{-y}.png', {
+    maxZoom: 17
 });
 
   const mapStyles = {
@@ -40,23 +45,25 @@ var osm1 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     height: '100vh',
   };
 
+  var baseMaps = {
+    "Skippo Prod": skippoProd,
+    "Skippo Test": skippoTest
+  };
+
   // Options for our map instance:
   const mapParams = {
-    center: [37.0902, -95.7129], // USA
-    zoom: 3,
+    center: [59.355596,17.973633], // USA
+    zoom: 6,
     zoomControl: true,
     minZoom: 0,
     maxZoom: 17,
     zoomSnap: 0.75,
     maxBounds: L.latLngBounds(L.latLng(-150, -240), L.latLng(150, 240)),
     closePopupOnClick: false,
-    layers: [osm, osm1], // Start with just the base layer
+    layers: [skippoProd, skippoTest], // Start with just the base layer
   };
 
-  var baseMaps = {
-    "OpenStreetMap": osm,
-    "Mapbox Streets": osm1
-};
+  
 
 // var overlayMaps = {
 //     "Cities": cities
@@ -83,11 +90,20 @@ var osm1 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     // Check for the map instance before adding something (ie: another event handler).
     // If no map, return:
     if (!mapInstance) return;
-    if (mapInstance) {
-      mapInstance.on('zoomstart', () => {
-        console.log('Zooming!!!');
+    
+    mapRef.current.on('moveend', () => {
+      var tmpZ= mapRef.current.getZoom().toFixed(2);
+      var tmpLat = mapRef.current.getCenter().lat.toFixed(4);
+      var tmpLng = mapRef.current.getCenter().lng.toFixed(4);
+      
+      setZoom(mapRef.current.getZoom().toFixed(2));
+      setLat(mapRef.current.getCenter().lat.toFixed(4));
+      setLng(mapRef.current.getCenter().lng.toFixed(4));
+      
+    //  console.log("move end, temp z",tmpZ, tmpLat, tmpLng);
+    //  console.log("move end, zoom ",zoom, lat, lng);
+      navigate(`../${tmpZ}/${tmpLat}/${tmpLng}`);
       });
-    }
   }, [mapInstance]);
 
   // Toggle marker on button click:

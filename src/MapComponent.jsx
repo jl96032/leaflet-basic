@@ -63,7 +63,7 @@ var skippoTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms
     zoomControl: true,
     minZoom: 0,
     maxZoom: 17,
-    zoomSnap: 0.75,
+    zoomSnap: 1,
     maxBounds: L.latLngBounds(L.latLng(-150, -240), L.latLng(150, 240)),
     closePopupOnClick: false,
     layers: [skippoProd, skippoTest], // Start with just the base layer

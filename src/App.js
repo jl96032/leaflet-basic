@@ -17,6 +17,7 @@ export default function App() {
               <Route path="/" element={<MapComponent />}></Route>
               {/* <Route path="showCollisionBoxes" element={<Map showCollisionBoxes={true}/>}></Route> */}
               <Route path=":z1/:lat1/:lng1" element={<MapComponent/>}></Route>
+              <Route path=":z1/:lat1/:lng1/:layer" element={<MapComponent/>}></Route>
           </Routes>
       </Router>
     </div>

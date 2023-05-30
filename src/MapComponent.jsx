@@ -18,15 +18,17 @@ const MapComponent = (props) => {
   const markerRef = useRef(null);
 
   let navigate = useNavigate();
-  let { z1 , lat1, lng1 } = useParams() // props.match?.lng1
+  let { z1 , lat1, lng1, layer1 } = useParams() // props.match?.lng1
   //let showCollisionBoxes = props.showCollisionBoxes;
   z1 = z1 || 6;
   lat1 = lat1 || 59.355596;
   lng1 = lng1 || 17.973633;
+  layer1 = layer1 || "hydrographica2x";
   
   const [lng, setLng] = useState(lng1);
   const [lat, setLat] = useState(lat1);
   const [zoom, setZoom] = useState(z1);
+  const [layer, setLayer] = useState(layer1);
 
   // Base tile for the map:
   tileRef.current = L.tileLayer(
@@ -37,13 +39,31 @@ const MapComponent = (props) => {
     }
   );
 
-  var skippoProd = L.tileLayer('https://map.eniro.com/geowebcache/service/tms1.0.0/hydrographica2x/{z}/{x}/{-y}.png', {
-    maxZoom: 17
-});
+  var skippoHGProd = L.tileLayer('https://map.eniro.com/geowebcache/service/tms1.0.0/hydrographica2x/{z}/{x}/{-y}.png', {
+      maxZoom: 17
+  });
 
-var skippoTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms1.0.0/hydrographica2x/{z}/{x}/{-y}.png', {
-    maxZoom: 17
-});
+  var skippoHGTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms1.0.0/hydrographica2x/{z}/{x}/{-y}.png', {
+      maxZoom: 17
+  });
+
+  var skippoNautical2xProd = L.tileLayer('https://map.eniro.com/geowebcache/service/tms1.0.0/nautical2x/{z}/{x}/{-y}.png', {
+      maxZoom: 17
+  });
+
+  var skippoNautical2xTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms1.0.0/nautical2x/{z}/{x}/{-y}.png', {
+      maxZoom: 17
+  });
+
+  var skippoNauticalProd = L.tileLayer('https://map.eniro.com/geowebcache/service/tms1.0.0/nautical/{z}/{x}/{-y}.png', {
+      maxZoom: 17
+  });
+
+  var skippoNauticalTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms1.0.0/nautical/{z}/{x}/{-y}.png', {
+      maxZoom: 17
+  });
+
+
 
   const mapStyles = {
     overflow: 'hidden',
@@ -52,9 +72,13 @@ var skippoTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms
   };
 
   var baseMaps = {
-    "Skippo Prod": skippoProd,
-    "Skippo Test": skippoTest
-  };
+    "Skippo HG Prod": skippoHGProd,
+    "Skippo HG Test": skippoHGTest,
+    "Skippo Nautical2x Prod": skippoNautical2xProd,
+    "Skippo Nautical2x Test": skippoNautical2xTest,
+    "Skippo Nautical Prod": skippoNauticalProd,
+    "Skippo Nautical Test": skippoNauticalTest,
+  } ;
 
   // Options for our map instance:
   const mapParams = {
@@ -66,7 +90,13 @@ var skippoTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms
     zoomSnap: 1,
     maxBounds: L.latLngBounds(L.latLng(-150, -240), L.latLng(150, 240)),
     closePopupOnClick: false,
-    layers: [skippoProd, skippoTest], // Start with just the base layer
+    baseLayers: [skippoHGProd, 
+      skippoHGTest, 
+      skippoNautical2xProd, 
+      skippoNautical2xTest,
+      skippoNauticalProd,
+      skippoNauticalTest], 
+          // Start with just the base layer
   };
 
   
@@ -81,6 +111,8 @@ var skippoTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms
   // Map creation:
   useEffect(() => {
     mapRef.current = L.map('map', mapParams);
+  //  var control = L.control.activeLayers(baseLayers, overlayLayers)
+  //  control.addTo(map)
 
     var layerControl = L.control.layers(baseMaps).addTo(mapRef.current);
     // mapRef.current.on('click', () => {
@@ -105,6 +137,7 @@ var skippoTest = L.tileLayer('https://test-map.eniro.com/geowebcache/service/tms
       setZoom(mapRef.current.getZoom().toFixed(2));
       setLat(mapRef.current.getCenter().lat.toFixed(4));
       setLng(mapRef.current.getCenter().lng.toFixed(4));
+     // console.log(mapRef.current.L.control.active);
       
     //  console.log("move end, temp z",tmpZ, tmpLat, tmpLng);
     //  console.log("move end, zoom ",zoom, lat, lng);
